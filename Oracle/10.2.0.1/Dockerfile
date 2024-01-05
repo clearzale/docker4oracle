@@ -19,7 +19,7 @@
 #
 # Pull base image
 # ---------------
-FROM centos
+FROM centos:centos7.9.2009
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
@@ -29,9 +29,6 @@ ENV ORACLE_BASE=/u01/app/oracle \
     INSTALL_RSP="bestv.rsp" \
     RUN_FILE="runOracle.sh" \
     START_FILE="startDB.sh" \
-    CREATE_DB_FILE="createDB.sh" \
-    CREATE_STB_FILE="createSTB.sh" \
-    START_MRP="startMRP.sh" \
     SETUP_LINUX_FILE="setupLinuxEnv.sh" \
     CHECK_SPACE_FILE="checkSpace.sh" \
     CHECK_DB_FILE="checkDBStatus.sh" \
@@ -46,7 +43,7 @@ ENV INSTALL_DIR=$ORACLE_BASE/install \
 # Copy binaries
 # -------------
 COPY $INSTALL_FILE $INSTALL_RSP $SETUP_LINUX_FILE $CHECK_SPACE_FILE $INSTALL_DB_BINARIES_FILE $INSTALL_DIR/
-COPY $RUN_FILE $START_FILE $CREATE_DB_FILE $CREATE_STB_FILE $START_MRP $CONFIG_RSP $CHECK_DB_FILE $ORACLE_BASE/
+COPY $RUN_FILE $START_FILE $CHECK_DB_FILE $ORACLE_BASE/
 
 RUN chmod ug+x $INSTALL_DIR/*.sh && \
     sync && \
@@ -65,7 +62,7 @@ RUN $ORACLE_BASE/oraInventory/orainstRoot.sh && \
 USER oracle
 WORKDIR /home/oracle
 
-VOLUME ["$ORACLE_BASE/oradata"]
+VOLUME ["/oradata"]
 EXPOSE 1521
 HEALTHCHECK --interval=1m --start-period=5m \
    CMD "$ORACLE_BASE/$CHECK_DB_FILE" >/dev/null
